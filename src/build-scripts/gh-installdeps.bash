@@ -68,12 +68,18 @@ else
     time sudo apt-get -q install -y \
         git cmake ninja-build ccache g++ \
         libboost-dev libboost-thread-dev libboost-filesystem-dev \
-        libilmbase-dev libopenexr-dev \
         libtiff-dev libgif-dev libpng-dev \
         flex bison libbison-dev \
-        libpugixml-dev \
-        libopencolorio-dev
-
+        libpugixml-dev
+    if [[ "${OSL_UBUNTU_INSTALL_PACKAGES}" != "" ]] ; then
+        time sudo apt-get -q install -y ${OSL_UBUNTU_INSTALL_PACKAGES}
+    fi
+    if [[ "${UBUNTU_INSTALL_OPENEXR}" != "0" ]] ; then
+        time sudo apt-get -q install -y libilmbase-dev libopenexr-dev
+    fi
+    if [[ "${UBUNTU_INSTALL_OCIO}" != "0" ]] ; then
+        time sudo apt-get -q install -y libopencolorio-dev
+    fi
     if [[ "${QT_VERSION:-5}" == "5" ]] ; then
         time sudo apt-get -q install -y \
             qt5-default || /bin/true

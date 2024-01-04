@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - desc: latest releases gcc11/C++17 llvm15 boost1.71 exr3.2 py3.9 avx2 batch-b16avx512
+          - desc: latest releases gcc11/C++17 llvm15 boost1.74 exr3.2 py3.10 avx2
             nametag: linux-latest-releases
             runner: ubuntu-20.04-gpu-t4-4c-16g-176h
             cxx_compiler: g++-11
@@ -50,12 +50,15 @@ jobs:
             pybind11_ver: v2.10.0
             python_ver: "3.10"
             simd: avx2,f16c
-            # batched: b8_AVX2,b8_AVX512,b16_AVX512
             setenvs: export LLVM_VERSION=15.0.6
                             LLVM_DISTRO_NAME=ubuntu-18.04
                             OPENCOLORIO_VERSION=v2.2.0
                             PUGIXML_VERSION=v1.13
-                            USE_GPU=1
+                            OSL_USE_OPTIX=1
+                            OPTIX_VERSION=7.0
+                            OSL_UBUNTU_INSTALL_PACKAGES="cuda-toolkit"
+                            UBUNTU_INSTALL_OPENEXR=0
+                            UBUNTU_INSTALL_OCIO=0
 
     runs-on: ${{matrix.runner}}
     env:

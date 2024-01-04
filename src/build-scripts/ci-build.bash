@@ -12,6 +12,10 @@ if [[ "$USE_SIMD" != "" ]] ; then
     OSL_CMAKE_FLAGS="$OSL_CMAKE_FLAGS -DUSE_SIMD=$USE_SIMD"
 fi
 
+if [[ "$OSL_USE_OPTIX" != "" ]] ; then
+    OSL_CMAKE_FLAGS="$OSL_CMAKE_FLAGS -DOSL_USE_OPTIX=$OSL_USE_OPTIX"
+fi
+
 if [[ -n "$CODECOV" ]] ; then
     OSL_CMAKE_FLAGS="$OSL_CMAKE_FLAGS -DCODECOV=${CODECOV}"
 fi
