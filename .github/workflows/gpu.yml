@@ -56,9 +56,18 @@ jobs:
                             PUGIXML_VERSION=v1.13
                             OSL_USE_OPTIX=1
                             OPTIX_VERSION=7.0
-                            OSL_UBUNTU_INSTALL_PACKAGES="cuda-toolkit"
                             UBUNTU_INSTALL_OPENEXR=0
                             UBUNTU_INSTALL_OCIO=0
+                            OSL_UBUNTU_INSTALL_PACKAGES="cuda-nvcc-12-3 cuda-cudart-12-3 cuda-cudart-dev-12-3 cuda-nvrtc-12-3 cuda-nvrtc-dev-12-3"
+                            # cuda-cccl cuda-command-line-tools cuda-compiler cuda-crt
+                            # cuda-cuobjdump cuda-cupti
+                            # cuda-cupti-dev cuda-cuxxfilt
+                            # cuda-driver-dev cuda-libraries
+                            # cuda-libraries-dev
+                            # cuda-nvdisasm
+                            # cuda-nvprune cuda-nvtx cuda-nvvm cuda-nvvp
+                            # cuda-toolkit cuda-toolkit-config-common
+                            # cuda-toolkit-12-config-common cuda-toolkit-config-common cuda-tools
 
     runs-on: ${{matrix.runner}}
     env:
