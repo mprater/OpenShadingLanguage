@@ -58,7 +58,8 @@ jobs:
                             OPTIX_VERSION=7.0
                             UBUNTU_INSTALL_OPENEXR=0
                             UBUNTU_INSTALL_OCIO=0
-                            OSL_UBUNTU_INSTALL_PACKAGES="cuda-nvcc-12-3 cuda-cudart-12-3 cuda-cudart-dev-12-3 cuda-nvrtc-12-3 cuda-nvrtc-dev-12-3"
+                            OSL_UBUNTU_INSTALL_PACKAGES="cuda-nvcc-11-8 cuda-cudart-11-8 cuda-cudart-dev-11-8 cuda-nvrtc-11-8 cuda-nvrtc-dev-11-8"
+                            # 12-3
                             # cuda-cccl cuda-command-line-tools cuda-compiler cuda-crt
                             # cuda-cuobjdump cuda-cupti
                             # cuda-cupti-dev cuda-cuxxfilt
