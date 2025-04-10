@@ -8,11 +8,11 @@
 
 #include "rend_lib.h"
 
-OSL_NAMESPACE_ENTER
+OSL_NAMESPACE_BEGIN
 namespace pvt {
 extern __device__ char* s_color_system;
 }
-OSL_NAMESPACE_EXIT
+OSL_NAMESPACE_END
 
 // Taken from the SimplePool class
 __device__ static inline size_t
@@ -230,8 +230,8 @@ osl_bind_interpolated_param(void* sg_, OSL::ustring_pod name, long long type,
     char status = *userdata_initialized;
     if (status == 0) {
         bool ok               = rend_get_userdata(HDSTR(name), userdata_data,
-                                    symbol_data_size, (*(OSL::TypeDesc*)&type),
-                                    userdata_index);
+                                                  symbol_data_size, (*(OSL::TypeDesc*)&type),
+                                                  userdata_index);
         *userdata_initialized = status = 1 + ok;
     }
     if (status == 2) {

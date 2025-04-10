@@ -7,7 +7,7 @@
 
 using namespace OSL;
 
-OSL_NAMESPACE_ENTER
+OSL_NAMESPACE_BEGIN
 
 struct UniqueStringCache {
     UniqueStringCache()
@@ -21,6 +21,7 @@ struct UniqueStringCache {
         , red("red")
         , green("green")
         , blue("blue")
+        , face_idx("face_idx")
         , lookupTable("lookupTable")
         , blahblah("blahblah")
         , options("options")
@@ -51,6 +52,7 @@ struct UniqueStringCache {
     ustring red;
     ustring green;
     ustring blue;
+    ustring face_idx;
     ustring lookupTable;
     ustring blahblah;
     ustring options;
@@ -663,7 +665,15 @@ BatchedSimpleRenderer<WidthT>::get_userdata(ustringhash name,
 
     // For testing of interactions with default values
     // may not provide data for all lanes
-    if (name == ucache().s && Masked<float>::is(val)) {
+    if (name == ucache().face_idx && Masked<int>::is(val)) {
+        Masked<int> out(val);
+        for (int i = 0; i < WidthT; ++i) {
+            if (out[i].is_on()) {
+                out[i] = int(4 * bsg->varying.u[i]);
+            }
+        }
+        return out.mask();
+    } else if (name == ucache().s && Masked<float>::is(val)) {
         Masked<float> out(val);
         for (int i = 0; i < WidthT; ++i) {
             // NOTE: assigning to out[i] will mask by itself
@@ -1004,4 +1014,4 @@ template class BatchedSimpleRenderer<8>;
 template class BatchedSimpleRenderer<4>;
 
 
-OSL_NAMESPACE_EXIT
+OSL_NAMESPACE_END

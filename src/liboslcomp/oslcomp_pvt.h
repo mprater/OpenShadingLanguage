@@ -17,7 +17,7 @@
 
 
 
-OSL_NAMESPACE_ENTER
+OSL_NAMESPACE_BEGIN
 
 namespace pvt {
 
@@ -363,9 +363,9 @@ private:
 
     // Output text to the osofile, using std::format formatting conventions.
     template<typename... Args>
-    inline void osofmt(const char* fmt, const Args&... args) const
+    inline void osofmt(const char* fmt, Args&&... args) const
     {
-        fmt::print(*m_osofile, fmt, args...);
+        fmt::print(*m_osofile, fmt, std::forward<Args>(args)...);
     }
 
     void track_variable_lifetimes()
@@ -477,4 +477,4 @@ private:
 
 };  // namespace pvt
 
-OSL_NAMESPACE_EXIT
+OSL_NAMESPACE_END

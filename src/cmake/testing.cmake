@@ -90,6 +90,9 @@ macro (add_one_testsuite testname testsrcdir)
             # Make sure libnvrtc-builtins.so is reachable
             set_property (TEST ${testname} APPEND PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CUDA_TOOLKIT_ROOT_DIR}/lib64:$ENV{LD_LIBRARY_PATH})
         endif()
+        if (DEFINED ENV{OSL_TESTSUITE_OPTIX_THRESH_SCALE})
+            set_property (TEST ${testname} APPEND PROPERTY ENVIRONMENT OSL_TESTSUITE_THRESH_SCALE=$ENV{OSL_TESTSUITE_OPTIX_THRESH_SCALE})
+        endif ()
     endif ()
     if (${testname} MATCHES "-reg")
         # These are batched shading regression tests. Some are quite
@@ -305,6 +308,7 @@ macro (osl_add_all_tests)
                 layers-nonlazycopy layers-repeatedoutputs
                 lazytrace
                 length-reg linearstep
+                lockgeom
                 logic loop luminance-reg
                 matrix matrix-reg matrix-arithmetic-reg
                 matrix-compref-reg max-reg message message-no-closure message-reg
@@ -355,7 +359,9 @@ macro (osl_add_all_tests)
                 reparam reparam-arrays reparam-string testoptix-reparam
                 render-background render-bumptest
                 render-bunny
-                render-cornell render-furnace-diffuse
+                render-cornell
+                render-displacement
+                render-furnace-diffuse
                 render-mx-furnace-burley-diffuse
                 render-mx-furnace-oren-nayar
                 render-mx-furnace-sheen
@@ -386,7 +392,7 @@ macro (osl_add_all_tests)
                 test-fmt-cxpf  test-fmt-noise test-fmt-matrixcolor 
                 test-fmt-stpf test-fmt-errorwarning test-fmt-errorwarning-repeats
                 texture-alpha texture-alpha-derivs
-                texture-blur texture-connected-options
+                texture-blur texture-colorspace texture-connected-options
                 texture-derivs texture-environment texture-errormsg
                 texture-environment-opts-reg
                 texture-firstchannel texture-interp

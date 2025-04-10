@@ -6,7 +6,7 @@
 
 #include <OSL/wide.h>
 
-OSL_NAMESPACE_ENTER
+OSL_NAMESPACE_BEGIN
 
 namespace Tex {
 
@@ -45,6 +45,12 @@ struct UniformTextureOptions {
 #endif
     float fill                = 0.0f;     ///< Fill value for missing channels
     const float* missingcolor = nullptr;  ///< Color for missing texture
+#ifdef OIIO_TEXTURESYSTEM_SUPPORTS_COLORSPACE
+    int colortransformid = 0;  ///< Color space id of the texture
+#endif
+    // Options set INTERNALLY by libtexture after the options are passed
+    // by the user.  Users should not attempt to alter these!
+    int private_envlayout = 0;  // Layout for environment wrap
 };
 
 template<int WidthT> struct VaryingTextureOptions {
@@ -72,7 +78,7 @@ template<int WidthT> struct BatchedTextureOptions {
 
     // Options set INTERNALLY by libtexture after the options are passed
     // by the user.  Users should not attempt to alter these!
-    int private_envlayout = 0;  // Layout for environment wrap
+    // int private_envlayout = 0;  // Layout for environment wrap
 
     // Implementation detail
     // keep order synchronized to the data members in this structure
@@ -96,6 +102,9 @@ template<int WidthT> struct BatchedTextureOptions {
         conservative_filter,
         fill,
         missingcolor,
+#ifdef OIIO_TEXTURESYSTEM_SUPPORTS_COLORSPACE
+        colortransformid,
+#endif
         private_envlayout,
         count
     };
@@ -220,6 +229,12 @@ static_assert(
     offsetof(OIIO::TextureOptBatch, missingcolor)
         == uniform_offset + offsetof(UniformTextureOptions, missingcolor),
     "BatchedTextureOptions members offset different than OIIO::TextureOptBatch");
+#    ifdef OIIO_TEXTURESYSTEM_SUPPORTS_COLORSPACE
+static_assert(
+    offsetof(OIIO::TextureOptBatch, colortransformid)
+        == uniform_offset + offsetof(UniformTextureOptions, colortransformid),
+    "BatchedTextureOptions members offset different than OIIO::TextureOptBatch");
+#    endif
 
 OSL_PRAGMA_WARNING_POP
 }  // namespace validate_offsets
@@ -279,11 +294,10 @@ private:
     Mask<WidthT> m_mask;
 };
 
-#define __OSL_USING_BATCHED_TEXTURE(WIDTH_OF_OSL_DATA)             \
-    using BatchedTextureOutputs                                    \
-        = OSL_NAMESPACE::BatchedTextureOutputs<WIDTH_OF_OSL_DATA>; \
-    using BatchedTextureOptions                                    \
-        = OSL_NAMESPACE::BatchedTextureOptions<WIDTH_OF_OSL_DATA>;
+#define __OSL_USING_BATCHED_TEXTURE(WIDTH_OF_OSL_DATA)   \
+    using BatchedTextureOutputs                          \
+        = OSL::BatchedTextureOutputs<WIDTH_OF_OSL_DATA>; \
+    using BatchedTextureOptions = OSL::BatchedTextureOptions<WIDTH_OF_OSL_DATA>;
 
 #undef OSL_USING_DATA_WIDTH
 #ifdef __OSL_USING_SHADERGLOBALS
@@ -297,4 +311,4 @@ private:
         __OSL_USING_BATCHED_TEXTURE(WIDTH_OF_OSL_DATA)
 #endif
 
-OSL_NAMESPACE_EXIT
+OSL_NAMESPACE_END

@@ -37,10 +37,7 @@ if (CMAKE_CXX_STANDARD VERSION_LESS CMAKE_CXX_MINIMUM)
     message (FATAL_ERROR "C++${CMAKE_CXX_STANDARD} is not supported, minimum is C++${CMAKE_CXX_MINIMUM}")
 endif ()
 # Remember the -std flags we need will be used later for custom Cuda builds
-set (CSTD_FLAGS "")
-if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG OR CMAKE_COMPILER_IS_INTEL)
-    set (CSTD_FLAGS "-std=c++${CMAKE_CXX_STANDARD}")
-endif ()
+set (CSTD_FLAGS "-std=c++${CMAKE_CXX_STANDARD}")
 
 
 ###########################################################################
@@ -220,14 +217,6 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
 endif ()
 
 
-# Remember the -std flags we need will be used later for custom Cuda builds
-set (CSTD_FLAGS "")
-if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG OR CMAKE_COMPILER_IS_INTEL)
-    set (CSTD_FLAGS "-std=c++${CMAKE_CXX_STANDARD}")
-endif ()
-
-
-
 # We will use this for ccache and timing
 set (MY_RULE_LAUNCH "")
 
@@ -379,6 +368,26 @@ if (CODECOV AND (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG))
     add_compile_options (-ftest-coverage -fprofile-arcs)
     add_compile_definitions (${PROJ_NAME}_CODE_COVERAGE=1)
     link_libraries(gcov)
+endif ()
+
+
+###########################################################################
+# Runtime profiling
+#
+set_cache (PROFILER "" "Build executables with profiler support (choices: gperftools)")
+if (PROFILER STREQUAL "gperftools")
+    find_library(PROFILER_LIBRARIES NAMES profiler)
+    message (STATUS "Compiling for profiling with ${PROFILER}, found ${PROFILER_LIBRARIES}")
+endif ()
+
+
+###########################################################################
+# Build profiling
+#
+set_option (${PROJ_NAME}_BUILD_PROFILER "Profile the build process" OFF)
+if (${PROJ_NAME}_BUILD_PROFILER AND CMAKE_COMPILER_IS_CLANG)
+    add_compile_options (-ftime-trace)
+    message (STATUS "Profiling the build process")
 endif ()
 
 
