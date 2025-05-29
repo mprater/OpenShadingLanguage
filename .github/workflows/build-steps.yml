@@ -18,6 +18,8 @@ on:
         type: string
       container:
         type: string
+      container_options:
+        type: string
       cc_compiler:
         type: string
       cxx_compiler:
@@ -88,7 +90,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     container:
       image: ${{ inputs.container }}
-
+      options: ${{ inputs.container_options }}
     env:
       CXX: ${{inputs.cxx_compiler}}
       CC: ${{inputs.cc_compiler}}
