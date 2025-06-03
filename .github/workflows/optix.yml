@@ -1,0 +1,95 @@
+# Copyright Contributors to the Open Shading Language project.
+# SPDX-License-Identifier: BSD-3-Clause
+# https://github.com/AcademySoftwareFoundation/OpenShadingLanguage
+
+# GitHub Actions workflow file for CI
+# https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: CI
+
+on:
+  push:
+    # Skip jobs when only documentation files are changed
+    paths:
+      - '**'
+      - '!**.md'
+      - '!**.rst'
+      - '!**.tex'
+      - '!**/analysis.yml'
+      - '!**/docs.yml'
+      - '!**.properties'
+      - '!doc/**'
+  pull_request:
+    paths:
+      - '**/optix.yml'
+      - 'src/liboslexec/**'
+      - 'src/testshade/**'
+      - 'src/testrender/**'
+  schedule:
+    # Weekly build, for the main project repo (not for forks)
+    - cron: "0 6 * * 0"
+      if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+  workflow_dispatch:
+    # This allows manual triggering of the workflow from the web
+
+permissions: read-all
+
+# Allow subsequent pushes to the same PR or REF to cancel any previous jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+
+  linux-optix:
+    if: ${{ ! contains(github.ref, 'windows-only') && ! contains(github.ref, 'macos-only') }}
+    name: "${{matrix.desc}}"
+    uses: ./.github/workflows/build-steps.yml
+    with:
+      nametag: ${{ matrix.nametag || 'unnamed!' }}
+      runner: ${{ matrix.runner || 'ubuntu-latest' }}
+      container: ${{ matrix.container }}
+      container_options: ${{ matrix.container_options }}
+      cc_compiler: ${{ matrix.cc_compiler || 'gcc' }}
+      cxx_compiler: ${{ matrix.cxx_compiler || 'g++' }}
+      cxx_std: ${{ matrix.cxx_std || '17' }}
+      build_type: ${{ matrix.build_type || 'Release' }}
+      depcmds: ${{ matrix.depcmds }}
+      extra_artifacts: ${{ matrix.extra_artifacts }}
+      fmt_ver: ${{ matrix.fmt_ver }}
+      opencolorio_ver: ${{ matrix.opencolorio_ver }}
+      openexr_ver: ${{ matrix.openexr_ver }}
+      openimageio_ver: ${{ matrix.openimageio_ver }}
+      pybind11_ver: ${{ matrix.pybind11_ver }}
+      python_ver: ${{ matrix.python_ver }}
+      setenvs: ${{ matrix.setenvs }}
+      simd: ${{ matrix.simd }}
+      batched: ${{ matrix.batched }}
+      skip_build: ${{ matrix.skip_build }}
+      skip_tests: ${{ matrix.skip_tests }}
+      abi_check: ${{ matrix.abi_check }}
+      build_docs: ${{ matrix.build_docs }}
+      generator: ${{ matrix.generator }}
+      ctest_args: ${{ matrix.ctest_args }}
+      ctest_test_timeout: ${{ matrix.ctest_test_timeout || '800' }}
+      coverage: ${{ matrix.coverage || 0 }}
+      sonar: ${{ matrix.sonar || 0 }}
+      llvm_action_ver: ${{ matrix.llvm_action_ver }}
+      clang_format: ${{ matrix.clang_format }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - desc: OptiX VP2025 gcc11/C++17 llvm19 py3.11 oiio-rel avx2
+            nametag: linux-optix-vfx2025
+            runner: ${{ (github.repository_owner == 'AcademySoftwareFoundation' && 'ubuntu-20.04-gpu-t4-4c-16g-176h') || 'ubuntu-latest' }}
+            container: aswf/ci-osl:2025
+            container_options: -e NVIDIA_DRIVER_CAPABILITIES=compute,graphics,utility --gpus all
+            cxx_std: 17
+            python_ver: "3.11"
+            pybind11_ver: v2.11.1
+            simd: avx2,f16c
+            setenvs: export OSL_CMAKE_FLAGS="-DOSL_USE_OPTIX=1"
+                            OPTIX_VERSION=8.0.0
+                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=9.1.0
